@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.primaryTitle }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <!-- Movie Title -->
+        <div class="text-center mb-4">
+            <h1 class="display-4">{{ movie.primaryTitle }}</h1>
+            <p class="text-muted">{{ movie.startYear }}</p>
+        </div>
+
+        <!-- Movie Details -->
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>Genres:</strong> {{ ', '.join(movie.genres) }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Directors:</strong> {{ ', '.join(movie.directors) }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Writers:</strong> {{ ', '.join(movie.writers) }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Rating:</strong> {{ movie.averageRating }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Votes:</strong> {{ movie.numVotes }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Runtime:</strong> {{ movie.runtimeMinutes }} minutes
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center mt-5">
+            <a href="/search?page={{ request.args.get('page', 1) }}&{{ request.args.to_query_string }}" 
+               class="btn btn-outline-primary btn-lg">Return</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Finder</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .search-box .card {
+            transition: none; /* Ensure the search box does not scale */
+        }
+        .movie-card {
+            transition: transform 0.2s; /* Add hover scaling effect for movie results */
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            flex-grow: 1;
+            text-align: center;
+        }
+        .header-home {
+            text-align: left;
+        }
+        .search-box .form-group {
+            margin-bottom: 15px;
+        }
+        .search-box .form-check {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Home Button and Title -->
+        <div class="header-container">
+            <div class="header-home">
+                <a href="/" class="btn btn-outline-primary">Home</a>
+            </div>
+            <h1 class="header-title">Movie Finder</h1>
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4 search-box">
+            <div class="card-header">
+                Search Movies
+            </div>
+            <div class="card-body">
+                <form action="/search" method="get">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="text" name="title" class="form-control" placeholder="Title" 
+                                   value="{{ search_params.get('title', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" step="0.1" name="minRating" class="form-control" placeholder="Rated Above" 
+                                   value="{{ search_params.get('minRating', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" step="0.1" name="maxRating" class="form-control" placeholder="Rated Below" 
+                                   value="{{ search_params.get('maxRating', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="minVotes" class="form-control" placeholder="Minimum Votes"
+                                   value="{{ search_params.get('minVotes', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="startYear" class="form-control" placeholder="After Year" 
+                                   value="{{ search_params.get('startYear', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="endYear" class="form-control" placeholder="Before Year" 
+                                   value="{{ search_params.get('endYear', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="director" class="form-control" placeholder="Directed By"
+                                   value="{{ search_params.get('director', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="writer" class="form-control" placeholder="Wrote By"
+                                   value="{{ search_params.get('writer', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="genre" class="form-select">
+                                <option value="">Genre</option>
+                                {% for genre in genres %}
+                                <option value="{{ genre }}" {% if search_params.get('genre') == genre %}selected{% endif %}>
+                                    {{ genre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="language" id="language" class="form-select">
+                                <option value="">Select Language</option>
+                                {% for language in languages %}
+                                <option value="{{ language.code }}" 
+                                        {% if search_params.get('language') == language.code %}selected{% endif %}>
+                                    {{ language.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 form-check">
+                            <input type="checkbox" name="isAdult" id="isAdult"
+                                   value="on" {% if search_params.get('isAdult') == 'on' %}checked{% endif %}>
+                            <label for="isAdult">Adult</label>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display Movies -->
+        {% if movies %}
+            <div class="row">
+                {% for movie in movies %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm movie-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.primaryTitle }}</h5>
+                            <p class="card-text">
+                                <strong>Year:</strong> {{ movie.startYear }}<br>
+                                <strong>Genres:</strong> {{ movie.genres | join(', ') }}<br>
+                                <strong>Rating:</strong> {{ movie.averageRating }}<br>
+                                <strong>Runtime:</strong> {{ movie.runtimeMinutes }} mins<br>
+                            </p>
+                            <a href="/movie/{{ movie.tconst }}" class="btn btn-primary">Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No movies found.</p>
+        {% endif %}
+
+        <!-- Pagination -->
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                    <a class="page-link" 
+                       href="?page={{ page - 1 }}{% for key, value in search_params.items() if value %}&{{ key }}={{ value }}{% endfor %}">
+                        Previous
+                    </a>
+                </li>
+                <li class="page-item {% if movies|length < 10 %}disabled{% endif %}">
+                    <a class="page-link" 
+                       href="?page={{ page + 1 }}{% for key, value in search_params.items() if value %}&{{ key }}={{ value }}{% endfor %}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>
