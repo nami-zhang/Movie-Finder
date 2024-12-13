@@ -126,6 +126,10 @@
                                    value="on" {% if search_params.get('isAdult') == 'on' %}checked{% endif %}>
                             <label for="isAdult">Adult</label>
                         </div>
+
+                        <!-- Preserve perPage Parameter -->
+                        <input type="hidden" name="perPage" value="{{ per_page }}">
+            
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-primary w-100">Search</button>
                         </div>
@@ -157,24 +161,51 @@
         {% else %}
             <p class="text-center">No movies found.</p>
         {% endif %}
-
-        <!-- Pagination -->
+        
+        <!-- Pagination and Per Page Buttons -->
         <nav class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item {% if page <= 1 %}disabled{% endif %}">
-                    <a class="page-link" 
-                       href="?page={{ page - 1 }}{% for key, value in search_params.items() if value %}&{{ key }}={{ value }}{% endfor %}">
-                        Previous
-                    </a>
-                </li>
-                <li class="page-item {% if movies|length < 10 %}disabled{% endif %}">
-                    <a class="page-link" 
-                       href="?page={{ page + 1 }}{% for key, value in search_params.items() if value %}&{{ key }}={{ value }}{% endfor %}">
-                        Next
-                    </a>
-                </li>
-            </ul>
+            <div class="d-flex justify-content-center align-items-center flex-wrap">
+                <!-- Previous and Next Page Buttons -->
+                <ul class="pagination mb-0 me-4">
+                    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                        <a class="page-link" 
+                        href="?page={{ page - 1 }}{% for key, value in search_params.items() if key != 'page' %}&{{ key }}={{ value }}{% endfor %}">
+                            Previous
+                        </a>
+                    </li>
+                    <li class="page-item {% if movies|length < per_page %}disabled{% endif %}">
+                        <a class="page-link" 
+                        href="?page={{ page + 1 }}{% for key, value in search_params.items() if key != 'page' %}&{{ key }}={{ value }}{% endfor %}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Spacer with subtle divider -->
+                <div class="mx-3" style="border-left: 1px solid #ddd; height: 24px;"></div>
+
+                <!-- Per Page Text and Buttons -->
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Show </span>
+                    <div class="btn-group" role="group" aria-label="Items per page">
+                        <a class="btn btn-outline-primary {% if per_page == 10 %}active{% endif %}" 
+                        href="?perPage=10{% for key, value in search_params.items() if key != 'perPage' %}&{{ key }}={{ value }}{% endfor %}">
+                            10
+                        </a>
+                        <a class="btn btn-outline-primary {% if per_page == 25 %}active{% endif %}" 
+                        href="?perPage=25{% for key, value in search_params.items() if key != 'perPage' %}&{{ key }}={{ value }}{% endfor %}">
+                            25
+                        </a>
+                        <a class="btn btn-outline-primary {% if per_page == 50 %}active{% endif %}" 
+                        href="?perPage=50{% for key, value in search_params.items() if key != 'perPage' %}&{{ key }}={{ value }}{% endfor %}">
+                            50
+                        </a>
+                    </div>
+                    <span class="ms-2"> items per page</span>
+                </div>
+            </div>
         </nav>
+
     </div>
 </body>
 </html>

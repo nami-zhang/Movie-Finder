@@ -506,12 +506,12 @@ def search():
 
     # Pagination
     page = int(request.args.get("page", 1))
-    per_page = 10
+    per_page = int(request.args.get("perPage", 10))  # Default to 10 items per page
 
     # Fetch movies
     movies = fetch_movies(search_params, page, per_page)
 
-    return render_template("search.html", movies=movies, page=page, search_mode=True, search_params=search_params)
+    return render_template("search.html", movies=movies, page=page, per_page=per_page, search_params=search_params)
 
 @app.route('/movie/<tconst>')
 def movie_details(tconst):

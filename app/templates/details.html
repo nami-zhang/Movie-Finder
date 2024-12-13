@@ -50,8 +50,9 @@
 
         <!-- Return Button -->
         <div class="text-center mt-5">
-            <a href="/search?page={{ request.args.get('page', 1) }}&{{ request.args.to_query_string }}" 
-               class="btn btn-outline-primary btn-lg">Return</a>
+            <button class="btn btn-outline-primary btn-lg" onclick="window.history.back();">
+                Return
+            </button>
         </div>
     </div>
 
